@@ -1,0 +1,58 @@
+<html style="text-align: center;">
+<head>
+<meta charset="UTF-8"> 
+<title>circles</title>
+</head>
+<body>
+<script>
+
+function normal()
+{
+    const NUM_SAMPLES = 6
+    var sum = 0
+    for (var i = 0 ; i < NUM_SAMPLES; i++)
+    {
+        sum += Math.random()
+    }
+    return (sum - NUM_SAMPLES / 2) / (NUM_SAMPLES / 2)
+}
+
+function makeSvgElement(name, properties)
+{
+    const e = document.createElementNS("http://www.w3.org/2000/svg", name);
+    for (const key in properties)
+    {
+        e.setAttribute(key, properties[key]);
+    }
+    return e;
+}
+
+const IMAGE_WIDTH = 1000;
+const IMAGE_HEIGHT = 1000;
+const TURNS = 7 / 4;
+const NUM_CIRCLES = 300;
+const RADIUS = 250;
+const OFFSET = RADIUS;
+const cx = 500;
+const cy = 500;
+const OPACITY = 0.5
+const BG_COLOR = "white";
+const COLOR = "black"
+
+const svg = makeSvgElement("svg", {"width":IMAGE_WIDTH, "height":IMAGE_HEIGHT});
+
+for (var i = 0; i < NUM_CIRCLES; i++)
+{
+    const r = RADIUS * i / NUM_CIRCLES;
+    const x = cx + Math.cos(TURNS * 2 * Math.PI * i / NUM_CIRCLES) * r;
+    const y = cy + Math.sin(TURNS * 2 * Math.PI * i / NUM_CIRCLES) * r;
+    const line = makeSvgElement("circle", {"cx":x, "cy":y, "r":r, "stroke-opacity":OPACITY, stroke:COLOR, fill:"none"})
+    svg.appendChild(line)
+}
+
+document.body.appendChild(svg);
+document.body.setAttribute("bgcolor", BG_COLOR)
+
+</script>
+</body>
+</html>

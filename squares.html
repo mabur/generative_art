@@ -1,0 +1,86 @@
+<html style="text-align: center;">
+<head>
+<meta charset="UTF-8"> 
+<title>squares</title>
+</head>
+<body>
+<script>
+
+function normal()
+{
+    const NUM_SAMPLES = 6
+    var sum = 0
+    for (var i = 0 ; i < NUM_SAMPLES; i++)
+    {
+        sum += Math.random()
+    }
+    return (sum - NUM_SAMPLES / 2) / (NUM_SAMPLES / 2)
+}
+
+function sampleSquareAlternative(r)
+{
+    x = normal();
+    y = normal();
+    n = Math.max(Math.abs(x), Math.abs(y))/ r;
+    //n = Math.sqrt(x*x+y*y) / r;
+    return [x / n, y / n]
+}
+
+function sampleSquare(r)
+{
+    x = Math.random() - 0.5;
+    y = Math.random() - 0.5;
+    n = Math.max(Math.abs(x), Math.abs(y))/ r;
+    return [x / n, y / n]
+}
+
+function makeSvgElement(name, properties)
+{
+    const e = document.createElementNS("http://www.w3.org/2000/svg", name);
+    for (const key in properties)
+    {
+        e.setAttribute(key, properties[key]);
+    }
+    return e;
+}
+
+const NUM_LINES = 6;
+const SIDE_LENGTH = 200;
+const PADDING = 100;
+const cx = SIDE_LENGTH;
+const cy = SIDE_LENGTH;
+const OPACITY = 1
+const BG_COLOR = "white";
+const COLOR = "black"
+const LINE_WIDTH = 40;
+const NUM_COLUMNS = 3;
+const NUM_ROWS = 3;
+const IMAGE_WIDTH = (NUM_COLUMNS + 0.5) * (SIDE_LENGTH + PADDING);
+const IMAGE_HEIGHT = (NUM_ROWS + 0.5) * (SIDE_LENGTH + PADDING);
+
+const svg = makeSvgElement("svg", {"width":IMAGE_WIDTH, "height":IMAGE_HEIGHT});
+
+for (var row = 0; row < NUM_ROWS; row++)
+{
+    for (var column = 0; column < NUM_COLUMNS; column++)
+    {
+        for (var i = 0; i < NUM_LINES; i++)
+        {
+            const p1 = sampleSquareAlternative(SIDE_LENGTH / 2);
+            const p2 = sampleSquareAlternative(SIDE_LENGTH / 2);
+            const x1 = p1[0] + column * (SIDE_LENGTH + PADDING) + cx;
+            const x2 = p2[0] + column * (SIDE_LENGTH + PADDING) + cx;
+            const y1 = p1[1] + row * (SIDE_LENGTH + PADDING) + cy;
+            const y2 = p2[1] + row * (SIDE_LENGTH + PADDING) + cy;
+            const line = makeSvgElement("line", {"x1":x1, "y1":y1, "x2":x2, "y2":y2, "stroke-opacity":OPACITY, "stroke":COLOR, "stroke-width":LINE_WIDTH})
+            svg.appendChild(line)
+        }
+    }
+}
+
+document.body.appendChild(svg);
+document.body.setAttribute("bgcolor", BG_COLOR)
+
+</script>
+</body>
+</html>
