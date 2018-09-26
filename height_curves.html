@@ -46,11 +46,11 @@ function sample_fourier_series(x, coefficients, smoothness, amplitude)
 
 function sample_heights(num_samples, num_coefficients, smoothness, amplitude)
 {
+    const coefficients = Array.from({length: num_coefficients}, Math.random);
     const f = function(v, k)
     {
         return sample_fourier_series(k * 1.0 / num_samples, coefficients, smoothness, amplitude)
     };
-    const coefficients = Array.from({length: num_coefficients}, Math.random);
     return Array.from({length: num_samples}, f); 
 }
 
@@ -72,14 +72,14 @@ for (var i = 0; i < NUM_CURVES; ++i)
 {
     heights = sample_heights(NUM_SAMPLES, NUM_COEFFICIENTS, SMOOTHNESS, AMPLITUDE);
     points = points_string(heights, XMIN, XMAX, CY + i * YSTEP);
-    const attributes =
+    const properties =
     {
         "points": points,
         "stroke-opacity": OPACITY,
         "stroke": STROKE_COLOR,
         "fill": FILL_COLOR
     };
-    const polyline = makeSvgElement("polyline", attributes);
+    const polyline = makeSvgElement("polyline", properties);
     svg.appendChild(polyline)
 }
 
