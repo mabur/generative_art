@@ -1,0 +1,91 @@
+<html style="text-align: center;">
+<head>
+<meta charset="UTF-8"> 
+<title>height curves</title>
+</head>
+<body>
+<script>
+
+const IMAGE_WIDTH = 1000;
+const IMAGE_HEIGHT = 1000;
+const NUM_SAMPLES = 2000;
+const CY = 500;
+const NUM_COEFFICIENTS = 1000;
+const NUM_CURVES = 10;
+const YSTEP = 50;
+const XMIN = -1000;
+const XMAX = 1000;
+const SMOOTHNESS = 1.5;
+const AMPLITUDE = 200.0;
+const OPACITY = 1;
+const BG_COLOR = "white";
+const STROKE_COLOR = "black";
+const FILL_COLOR = "white";
+
+function makeSvgElement(name, properties)
+{
+    const e = document.createElementNS("http://www.w3.org/2000/svg", name);
+    for (const key in properties)
+    {
+        e.setAttribute(key, properties[key]);
+    }
+    return e;
+}
+
+function sample_fourier_series(x, coefficients, smoothness, amplitude)
+{
+    var value = 0.0;
+    for (var i = 0; i < coefficients.length; i++)
+    {
+        const a = (coefficients[i] * 2.0 - 1.0) / Math.pow(i + 1, smoothness);
+        const b = (i + 1) * 2.0 * 3.14151965 * x;
+        value += a * Math.sin(b);
+    }
+    return amplitude * value * value;
+}
+
+function sample_heights(num_samples, num_coefficients, smoothness, amplitude)
+{
+    const f = function(v, k)
+    {
+        return sample_fourier_series(k * 1.0 / num_samples, coefficients, smoothness, amplitude)
+    };
+    const coefficients = Array.from({length: num_coefficients}, Math.random);
+    return Array.from({length: num_samples}, f); 
+}
+
+function points_string(heights, xmin, xmax, ymean)
+{
+    var points = '';
+    for (var i = 0; i < heights.length; i++)
+    {
+        const x = xmin + i * (xmax - xmin) / heights.length;
+        const y = ymean - heights[i];
+        points += x + ", " + y + " ";
+    }
+    return points;
+}
+
+const svg = makeSvgElement("svg", {"width":IMAGE_WIDTH, "height":IMAGE_HEIGHT});
+
+for (var i = 0; i < NUM_CURVES; ++i)
+{
+    heights = sample_heights(NUM_SAMPLES, NUM_COEFFICIENTS, SMOOTHNESS, AMPLITUDE);
+    points = points_string(heights, XMIN, XMAX, CY + i * YSTEP);
+    const attributes =
+    {
+        "points": points,
+        "stroke-opacity": OPACITY,
+        "stroke": STROKE_COLOR,
+        "fill": FILL_COLOR
+    };
+    const polyline = makeSvgElement("polyline", attributes);
+    svg.appendChild(polyline)
+}
+
+document.body.appendChild(svg);
+document.body.setAttribute("bgcolor", BG_COLOR)
+
+</script>
+</body>
+</html>
