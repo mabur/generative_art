@@ -1,9 +1,11 @@
 <html style="text-align: center;">
 <head>
-<meta charset="UTF-8"> 
+<meta charset="UTF-8">
+<link rel="stylesheet" type="text/css" href="style.css">
 <title>squares</title>
 </head>
 <body>
+<script src="header.js"></script> 
 <script>
 
 function normal()
@@ -45,14 +47,14 @@ function makeSvgElement(name, properties)
 }
 
 const NUM_LINES = 6;
-const SIDE_LENGTH = 200;
-const PADDING = 100;
+const SIDE_LENGTH = 160;
+const PADDING = SIDE_LENGTH / 2;
 const cx = SIDE_LENGTH;
 const cy = SIDE_LENGTH;
 const OPACITY = 1
 const BG_COLOR = "white";
 const COLOR = "black"
-const LINE_WIDTH = 40;
+const LINE_WIDTH = SIDE_LENGTH / 4;
 const NUM_COLUMNS = 3;
 const NUM_ROWS = 3;
 const IMAGE_WIDTH = (NUM_COLUMNS + 0.5) * (SIDE_LENGTH + PADDING);
