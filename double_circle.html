@@ -1,9 +1,13 @@
 <html style="text-align: center;">
 <head>
 <meta charset="UTF-8"> 
+<link rel="stylesheet" type="text/css" href="style.css">
 <title>double circle</title>
+<style>
+</style>
 </head>
 <body>
+<script src="header.js"></script> 
 <script>
 
 function normal()
@@ -55,17 +59,24 @@ function scale(s, a)
     return [s * a[0], s * a[1]];
 }
 
-const IMAGE_WIDTH = 1000;
-const IMAGE_HEIGHT = 1000;
-const NUM_LINES = 400;
-const OUTER_RADIUS = 400;
+const IMAGE_WIDTH = 750;
+const IMAGE_HEIGHT = 750;
+const NUM_LINES = 600;
+const OUTER_RADIUS = 600;
 const INNER_RADIUS = OUTER_RADIUS / 3;
-const CENTER = [500, 500]
-const OPACITY = 0.3
-const COLOR = "white";
-const BG_COLOR = "black"
+const CENTER = [IMAGE_WIDTH/2, IMAGE_HEIGHT/2]
+const RECT_WIDTH = 750;
+const RECT_HEIGHT = 750;
+const OPACITY = 1;
+const COLOR = "black";
+const BG_COLOR = "white"
 
-const svg = makeSvgElement("svg", {"width":IMAGE_WIDTH, "height":IMAGE_HEIGHT});
+const svg = makeSvgElement("svg", {"width":IMAGE_WIDTH, "height":IMAGE_HEIGHT, "clip": "rect(0px 60px 200px 0px)"});
+
+const clip = makeSvgElement("clipPath", {"id": "myClip"});
+const rect = makeSvgElement("rect", {"x": CENTER[0] - RECT_WIDTH/2, "y": CENTER[1] - RECT_HEIGHT/2, "width": RECT_WIDTH, "height": RECT_HEIGHT})
+clip.appendChild(rect);
+svg.appendChild(clip);
 
 for (var i = 0; i < NUM_LINES; i++)
 {
@@ -92,7 +103,7 @@ for (var i = 0; i < NUM_LINES; i++)
     const y1 = p1[1];
     const y2 = p2[1];
 
-    const line = makeSvgElement("line", {"x1":x1, "y1":y1, "x2":x2, "y2":y2, "stroke-opacity":OPACITY, stroke: COLOR})
+    const line = makeSvgElement("line", {"x1":x1, "y1":y1, "x2":x2, "y2":y2, "stroke-opacity":OPACITY, stroke: COLOR, 'clip-path': "url(#myClip)"})
     svg.appendChild(line)
 }
 
