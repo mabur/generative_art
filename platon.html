@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Platon</title>
+<style>
+@import url('https://fonts.googleapis.com/css?family=Fira+Mono');
+</style> 
+<meta charset="utf-8"/>
+<script type="application/javascript">
+const WIDTH = 1200;
+const HEIGHT = 1000;
+const CX = WIDTH / 2;
+const CY = HEIGHT / 2;
+const COLOR = "#E1706E"; "#499BB5";
+const R = 300;
+const Z_CAM = -7.0;
+const FOCAL = 1.5 * CX;
+
+const phi = (1 + Math.sqrt(5)) / 2;
+const a = 0.5;
+const b = 0.5 * 1 / phi;
+const c = 0.5 * (2 - phi);
+
+const vertices = [
+  [ c,  0,  a],
+  [-c,  0,  a],
+  [-b,  b,  b],
+  [ 0,  a,  c],
+  [ b,  b,  b],
+  [ b, -b,  b],
+  [ 0, -a,  c],
+  [-b, -b,  b],
+  [ c,  0, -a],
+  [-c,  0, -a],
+  [-b, -b, -b],
+  [ 0, -a, -c],
+  [ b, -b, -b],
+  [ b,  b, -b],
+  [ 0,  a, -c],
+  [-b,  b, -b],
+  [ a,  c,  0],
+  [-a,  c,  0],
+  [-a, -c,  0],
+  [ a, -c,  0]
+];
+
+const edges = [
+  [  0,  1 ],
+  [  0,  4 ],
+  [  0,  5 ],
+  [  1,  2 ],
+  [  1,  7 ],
+  [  2,  3 ],
+  [  2, 17 ],
+  [  3,  4 ],
+  [  3, 14 ],
+  [  4, 16 ],
+  [  5,  6 ],
+  [  5, 19 ],
+  [  6,  7 ],
+  [  6, 11 ],
+  [  7, 18 ],
+  [  8,  9 ],
+  [  8, 12 ],
+  [  8, 13 ],
+  [  9, 10 ],
+  [  9, 15 ],
+  [ 10, 11 ],
+  [ 10, 18 ],
+  [ 11, 12 ],
+  [ 12, 19 ],
+  [ 13, 14 ],
+  [ 13, 16 ],
+  [ 14, 15 ],
+  [ 15, 17 ],
+  [ 16, 19 ],
+  [ 17, 18 ]
+];
+
+function init()
+{
+    window.requestAnimationFrame(draw);
+}
+
+function rotateY(point, angle)
+{
+    return [
+        point[0] * Math.cos(angle) + point[2] * Math.sin(angle),
+        point[1],
+        -point[0] * Math.sin(angle) + point[2] * Math.cos(angle)]
+}
+
+function rotateX(point, angle)
+{
+    return [point[0],
+        point[1] * Math.cos(angle) - point[2] * Math.sin(angle),
+        point[1] * Math.sin(angle) + point[2] * Math.cos(angle)]
+}
+
+function project(point)
+{
+    const xc = CX + FOCAL * point[0] / (point[2] + Z_CAM);
+    const yc = CY + FOCAL * point[1] / (point[2] + Z_CAM);
+    return [xc, yc];
+}
+
+function draw()
+{
+    const canvas = document.getElementById('canvas');
+    const context = canvas.getContext('2d');
+    context.clearRect(0, 0, WIDTH, HEIGHT);
+    const time = new Date();
+    const milli_seconds = time.getTime();
+    const angle = 0.0004 * milli_seconds;
+    const number = (4*milli_seconds) % 9000 + 1000;
+
+    const text = "MEASURING " + number;
+    context.font = '36px courier';
+    const text_width = context.measureText(text).width;
+    const text_x = CX - text_width / 2;
+    const text_y = CY + 195;
+    context.fillStyle = COLOR;
+    context.fillText(text, text_x, text_y);
+
+    context.beginPath();
+    context.strokeStyle = COLOR;
+
+    for (edge of edges)
+    {
+        const i0 = edge[0];
+        const i1 = edge[1];
+        const v0 = rotateY(rotateX(vertices[i0], 0.15 * Math.PI), angle);
+        const v1 = rotateY(rotateX(vertices[i1], 0.15 * Math.PI), angle);
+
+        context.moveTo(v0[0] * R + CX, v0[1] * R + CY - 40);
+        context.lineTo(v1[0] * R + CX, v1[1] * R + CY - 40);
+    }
+
+    const XMIN = -5.0;
+    const XMAX = +5.0;
+    const YMIN = -3.0;
+    const YMAX = +3.0;
+    const ZMIN = -4.0;
+    const ZMAX = +1.0;
+
+    for (var x = XMIN; x <= XMAX; x++)
+    {
+        const p0 = project([x, YMIN, ZMIN]);
+        const p1 = project([x, YMIN, ZMAX]);
+        context.moveTo(p0[0], p0[1]);
+        context.lineTo(p1[0], p1[1]);
+    }
+    for (var z = ZMIN; z <= ZMAX; z++)
+    {
+        const p0 = project([XMIN, YMIN, z]);
+        const p1 = project([XMAX, YMIN, z]);
+        context.moveTo(p0[0], p0[1]);
+        context.lineTo(p1[0], p1[1]);
+    }
+    for (var x = XMIN; x <= XMAX; x++)
+    {
+        const p0 = project([x, YMAX, ZMIN]);
+        const p1 = project([x, YMAX, ZMAX]);
+        context.moveTo(p0[0], p0[1]);
+        context.lineTo(p1[0], p1[1]);
+    }
+    for (var z = ZMIN; z <= ZMAX; z++)
+    {
+        const p0 = project([XMIN, YMAX, z]);
+        const p1 = project([XMAX, YMAX, z]);
+        context.moveTo(p0[0], p0[1]);
+        context.lineTo(p1[0], p1[1]);
+    }
+
+    context.stroke()
+
+    window.requestAnimationFrame(draw);
+}
+init();
+</script>
+</head>
+<body bgcolor="#10162E">
+<center>
+<canvas id="canvas" width="1200" height="1000"></canvas>
+</body>
+</html>
