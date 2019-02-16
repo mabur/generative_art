@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Progress</title>
+<meta charset="utf-8"/>
+<script type="application/javascript">
+const WIDTH = 1000;
+const HEIGHT = 1200;
+const NUM_POINTS = 200;
+const CX = WIDTH / 2;
+const CY = HEIGHT / 2;
+const POINT_RADIUS = 4;
+const SPHERE_RADIUS = 300;
+const POINT_FONT = '20px courier';
+const COLOR = "#499BB5";//"#E1706E";
+
+var points = new Array(NUM_POINTS);
+var numbers = new Array(NUM_POINTS);
+var angle = 0.0;
+
+function init()
+{
+    for(var i = 0; i < points.length; i++)
+    {
+        points[i] = sampleSphere(SPHERE_RADIUS);
+        numbers[i] = sampleRandomInteger();
+    }
+    window.requestAnimationFrame(draw);
+}
+
+function sampleRandomInteger()
+{
+  min = 0;
+  max = 999;
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function normal()
+{
+    const NUM_SAMPLES = 6;
+    var sum = 0;
+    for (var i = 0 ; i < NUM_SAMPLES; i++)
+    {
+        sum += Math.random();
+    }
+    return (sum - NUM_SAMPLES / 2) / (NUM_SAMPLES / 2);
+}
+
+function sampleCircle(r)
+{
+    x = normal();
+    y = normal();
+    n = Math.sqrt(x * x + y * y) / r;
+    return [x / n, y / n];
+}
+
+function sampleSphere(r)
+{
+    x = normal();
+    y = normal();
+    z = normal();
+    n = Math.sqrt(x * x + y * y + z * z) / r;
+    n = 0.6 / r;
+    return [x / n, y / n, z / n];
+}
+
+function drawCircle(context, x, y, r)
+{
+    context.beginPath();
+    context.arc(x, y, r, 0, 2 * Math.PI);
+    context.fill();    
+}
+
+function draw()
+{
+    const canvas = document.getElementById('canvas');
+    const context = canvas.getContext('2d');
+    context.clearRect(0, 0, WIDTH, HEIGHT);
+
+    var time = new Date();
+
+    angle = 0.0002 * time.getTime();
+
+    context.font = '72px courier';
+    const text_width = context.measureText("MEASURING FEET").width;
+    //const text_height = parseInt(context.font, 10);
+    const text_x = CX - text_width / 2;
+    const text_y = 2 * SPHERE_RADIUS + 200;
+    
+    context.fillStyle = '#f50';
+
+    //context.fillRect(text_x, text_y-text_height, text_width, text_height);
+    context.fillStyle = COLOR;
+    context.fillText("██████████████", text_x, text_y);
+    context.fillStyle = "#10162E";
+    context.fillText("MEASURING FEET", text_x, text_y);
+    context.fillStyle = COLOR;
+    
+    for(var i = 0; i < points.length; i++)
+    {
+        x = points[i][0];
+        y = points[i][1];
+        z = points[i][2];
+
+        xp = x * Math.sin(angle) + z * Math.cos(angle) + CX;
+        yp = y + SPHERE_RADIUS + 100;
+
+        context.font = POINT_FONT;
+        context.fillText(numbers[i], xp - 17, yp - 10);
+        drawCircle(context, xp, yp, POINT_RADIUS);
+    }
+
+    const wave_x = text_x;
+    const wave_y = text_y + 120;
+    const STEPS = 64;
+    const A = 50;
+    const sx = 1.0 / (STEPS + 1) * text_width;
+    const sa = 1.0 / (STEPS + 1) * 4.0 * Math.PI;
+
+    var y1 = A * Math.sin((0) * sa + angle*10);
+    var y2 = A * Math.sin((STEPS) * sa + angle*10);
+
+    //drawCircle(context, wave_x,              wave_y + y1, POINT_RADIUS);
+    //drawCircle(context, wave_x + text_width, wave_y + y2, POINT_RADIUS);
+
+    context.beginPath();
+    context.setLineDash([]);
+    context.strokeStyle = COLOR;
+    context.setLineDash([5,15]);
+    context.lineWidth = 3;
+
+    for (i = 0; i <= STEPS; i++)
+    {    
+
+        var x1 = (i + 0) * sx;
+        var x2 = (i + 1) * sx;
+        var y1 = A * Math.sin((i + 0) * sa + angle*10);
+        var y2 = A * Math.sin((i + 1) * sa + angle*10);
+        context.moveTo(wave_x + x1, wave_y + y1);
+        context.lineTo(wave_x + x2, wave_y + y2);
+    }
+
+    context.moveTo(wave_x,              wave_y - A);
+    context.lineTo(wave_x + text_width, wave_y - A);
+    context.moveTo(wave_x,              wave_y);
+    context.lineTo(wave_x + text_width, wave_y);
+    context.moveTo(wave_x,              wave_y + A);
+    context.lineTo(wave_x + text_width, wave_y + A);
+
+    context.stroke();
+
+    window.requestAnimationFrame(draw);
+}
+init();
+</script>
+</head>
+<body bgcolor="#10162E">
+<center>
+<canvas id="canvas" width="1000" height="1200"></canvas>
+</body>
+</html>
