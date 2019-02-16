@@ -10,13 +10,13 @@
 
 function normal()
 {
-    const NUM_SAMPLES = 6
-    var sum = 0
+    const NUM_SAMPLES = 6;
+    var sum = 0;
     for (var i = 0 ; i < NUM_SAMPLES; i++)
     {
-        sum += Math.random()
+        sum += Math.random();
     }
-    return (sum - NUM_SAMPLES / 2) / (NUM_SAMPLES / 2)
+    return (sum - NUM_SAMPLES / 2) / (NUM_SAMPLES / 2);
 }
 
 function sampleCircle(r)
@@ -24,7 +24,7 @@ function sampleCircle(r)
     x = normal();
     y = normal();
     n = Math.sqrt(x * x + y * y) / r;
-    return [x / n, y / n]
+    return [x / n, y / n];
 }
 
 function makeSvgElement(name, properties)
