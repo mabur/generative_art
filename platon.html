@@ -1,17 +1,21 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Platon</title>
+<link rel="stylesheet" type="text/css" href="style.css">
+<title>platon</title>
 <style>
 @import url('https://fonts.googleapis.com/css?family=Fira+Mono');
 </style> 
 <meta charset="utf-8"/>
+<body bgcolor="black" color="white">
+<center>
+<script src="header.js"></script> 
 <script type="application/javascript">
 const WIDTH = 1200;
 const HEIGHT = 1000;
 const CX = WIDTH / 2;
 const CY = HEIGHT / 2;
-const COLOR = "#E1706E"; "#499BB5";
+const COLOR = "white";//"#E1706E"; "#499BB5";
 const R = 300;
 const Z_CAM = -7.0;
 const FOCAL = 1.5 * CX;
@@ -178,9 +182,6 @@ function draw()
 }
 init();
 </script>
-</head>
-<body bgcolor="#10162E">
-<center>
 <canvas id="canvas" width="1200" height="1000"></canvas>
 </body>
 </html>
