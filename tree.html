@@ -1,0 +1,135 @@
+<html style="text-align: center;">
+<head>
+<meta charset="UTF-8"> 
+<link rel="stylesheet" type="text/css" href="style.css">
+<title>tree</title>
+</head>
+<body>
+<script src="header.js"></script> 
+<script>
+
+const RANDOMNESS = 1.0;
+const DY_TOTAL = 100;
+const DY = DY_TOTAL * (1.0 - RANDOMNESS);
+const DY_RAND = DY_TOTAL * RANDOMNESS * 2;
+const DEPTH = 5;
+const IMAGE_WIDTH = 750;
+const IMAGE_HEIGHT = 750;
+const NUM_LINES = 1000;
+const RADIUS = IMAGE_WIDTH / 2 - 2;
+const cx = IMAGE_WIDTH / 2;
+const cy = IMAGE_HEIGHT / 2;
+const OPACITY = 1
+const BG_COLOR = "white";
+const COLOR = "black";
+
+function normal()
+{
+    const NUM_SAMPLES = 6;
+    var sum = 0;
+    for (var i = 0 ; i < NUM_SAMPLES; i++)
+    {
+        sum += Math.random();
+    }
+    return (sum - NUM_SAMPLES / 2) / (NUM_SAMPLES / 2);
+}
+
+function sampleCircle(r)
+{
+    x = normal();
+    y = normal();
+    n = Math.sqrt(x * x + y * y) / r;
+    return [x / n, y / n];
+}
+
+function makeSvgElement(name, properties)
+{
+    const e = document.createElementNS("http://www.w3.org/2000/svg", name);
+    for (const key in properties)
+    {
+        e.setAttribute(key, properties[key]);
+    }
+    return e;
+}
+
+function drawTree(svg, tree)
+{
+    for (child of tree.children)
+    {
+        const xp = tree.position[0];
+        const yp = tree.position[1];
+        const xc = child.position[0]
+        const yc = child.position[1]
+
+        const l0 = makeSvgElement("line", {"x1":xp, "y1":yp, "x2":xc, "y2":yp, "stroke-opacity":OPACITY, stroke:COLOR});
+        const l1 = makeSvgElement("line", {"x1":xc, "y1":yp, "x2":xc, "y2":yc, "stroke-opacity":OPACITY, stroke:COLOR});
+        const l2 = makeSvgElement("line", {"x1":xp, "y1":yp, "x2":xc, "y2":yc, "stroke-opacity":OPACITY, stroke:COLOR});
+
+        svg.appendChild(l0);
+        svg.appendChild(l1);
+        svg.appendChild(l2);
+
+        drawTree(svg, child);
+    }
+}
+
+// Returns an array of elements with position field.
+function getLevel(tree, level)
+{
+    if (level == 0 || tree.children.length == 0)
+    {
+        return [tree];
+    }
+    var flat = [];
+    for (child of tree.children)
+    {
+        const flat_child = getLevel(child, level - 1);
+        flat = flat.concat(flat_child);
+    }
+    return flat;
+}
+
+function drawLevel(svg, tree)
+{
+    for (var i = 0; i < tree.length - 1; ++i)
+    {
+        const x1 = tree[i + 0].position[0];
+        const y1 = tree[i + 0].position[1];
+        const x2 = tree[i + 1].position[0]
+        const y2 = tree[i + 1].position[1]
+        const l = makeSvgElement("line", {"x1":x1, "y1":y1, "x2":x2, "y2":y2, "stroke-opacity":OPACITY, stroke:COLOR});
+        svg.appendChild(l);
+    }
+}
+
+function makeTree(x, y, dx, dy, depth)
+{
+    if (depth == 0)
+    {
+        return {"position": [x, y], "children": []};
+    }
+    const left         = x - dx;
+    const right        = x + dx;
+    const bottom_left  = y + dy + Math.random() * DY_RAND;
+    const bottom_right = y + dy + Math.random() * DY_RAND;
+    const child_left   = makeTree( left,  bottom_left, dx / 2, dy, depth - 1);
+    const child_right  = makeTree(right, bottom_right, dx / 2, dy, depth - 1);
+    return {"position": [x, y], "children": [child_left, child_right]};
+}
+
+const svg = makeSvgElement("svg", {"width":IMAGE_WIDTH, "height":IMAGE_HEIGHT});
+
+const tree = makeTree(IMAGE_WIDTH/2, 0, IMAGE_WIDTH/4, DY, DEPTH);
+drawTree(svg, tree);
+for (var depth = 1; depth <= DEPTH; ++depth)
+{
+    const level = getLevel(tree, depth);
+    drawLevel(svg, level);
+}
+
+document.body.appendChild(svg);
+document.body.setAttribute("bgcolor", BG_COLOR)
+
+</script>
+</body>
+</html>
