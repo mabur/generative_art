@@ -1,0 +1,69 @@
+<html style="text-align: center;">
+<head>
+<meta charset="UTF-8"> 
+<link rel="stylesheet" type="text/css" href="style.css">
+<title>wires</title>
+</head>
+<body>
+<script src="header.js"></script> 
+<script>
+
+function makeSvgElement(name, properties)
+{
+    const e = document.createElementNS("http://www.w3.org/2000/svg", name);
+    for (const key in properties)
+    {
+        e.setAttribute(key, properties[key]);
+    }
+    return e;
+}
+
+function f(x, y)
+{
+    const m = Math.sqrt(x*x + y*y);
+    return [x/m, y/m];
+}
+
+const IMAGE_WIDTH = 500;
+const IMAGE_HEIGHT = 500;
+const cx = IMAGE_WIDTH / 2;
+const cy = IMAGE_HEIGHT / 2;
+const OPACITY = 1
+const BG_COLOR = "white";
+const COLOR = "black"
+
+const svg = makeSvgElement("svg", {"width":IMAGE_WIDTH, "height":IMAGE_HEIGHT});
+
+const NUM_STEPS = 8;
+const NUM_STEPS_Y = 10;
+const NUM_STEPS_X = 10;
+const SCALE_X = 4 * IMAGE_WIDTH / NUM_STEPS_X;
+const SCALE_Y = 4 * IMAGE_HEIGHT / NUM_STEPS_Y;
+
+for (var yi = 0; yi < NUM_STEPS_Y; yi++)
+{
+    for (var xi = 0; xi < NUM_STEPS_X; xi++)
+    {
+        // [-1,+1]^2
+        const x = xi / (NUM_STEPS_X - 1.0) * 2.0 - 1.0;
+        const y = yi / (NUM_STEPS_Y - 1.0) * 2.0 - 1.0;
+        const d = f(x, y);
+        const x1 = cx + x * SCALE_X;
+        const y1 = cy + y * SCALE_Y;
+        const x2 = cx + x * SCALE_X + d[0] * SCALE_X * 0.1;
+        const y2 = cy + y * SCALE_Y + d[1] * SCALE_Y * 0.1;
+        const line = makeSvgElement(
+            "line",
+            {"x1":x1, "y1":y1, "x2":x2, "y2":y2,
+            "stroke-opacity":OPACITY, stroke:COLOR}
+        )
+        svg.appendChild(line)
+    }
+}
+
+document.body.appendChild(svg);
+document.body.setAttribute("bgcolor", BG_COLOR)
+
+</script>
+</body>
+</html>
